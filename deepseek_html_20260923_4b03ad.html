@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VM Save — Команды</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💎</text></svg>">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  background:#060d1a;
+  color:#f0f6ff;
+  line-height:1.6;
+  font-size:15px;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+a{text-decoration:none;color:inherit}
+
+/* NAV */
+.nav{
+  position:sticky;top:0;z-index:100;
+  background:#0a1526;
+  border-bottom:1px solid rgba(148,163,184,.1);
+  padding:14px 20px;
+}
+.nav-in{
+  max-width:1100px;margin:0 auto;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+}
+.logo{
+  display:flex;align-items:center;gap:10px;
+  font-weight:800;font-size:17px;
+}
+.logo-emoji{font-size:22px}
+.logo b{color:#38bdf8}
+.nav-links{display:flex;gap:2px}
+.nav-links a{
+  padding:7px 14px;border-radius:10px;
+  font-size:13px;font-weight:600;color:#8ba3c7;
+  transition:all .25s;
+}
+.nav-links a:hover{color:#38bdf8;background:rgba(56,189,248,.1)}
+.nav-btn{
+  padding:9px 18px;border-radius:11px;
+  background:linear-gradient(135deg,#0ea5e9,#38bdf8);
+  color:#fff;font-size:13px;font-weight:700;
+  box-shadow:0 4px 16px rgba(14,165,233,.35);
+}
+
+/* HERO */
+.hero{
+  text-align:center;padding:60px 20px 30px;
+  max-width:800px;margin:0 auto;
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:7px 16px;border-radius:100px;
+  background:rgba(56,189,248,.1);
+  border:1px solid rgba(56,189,248,.25);
+  font-size:12px;font-weight:700;color:#38bdf8;
+  margin-bottom:20px;
+}
+.dot{
+  width:6px;height:6px;border-radius:50%;
+  background:#34d399;
+  box-shadow:0 0 8px #34d399;
+}
+.hero h1{
+  font-size:clamp(34px,7vw,60px);
+  font-weight:900;letter-spacing:-2px;
+  line-height:1.05;margin-bottom:16px;
+}
+.hero h1 b{
+  background:linear-gradient(135deg,#38bdf8,#a78bfa);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.hero p{
+  font-size:16px;color:#8ba3c7;
+  max-width:600px;margin:0 auto 28px;
+}
+.hero-btns{
+  display:flex;gap:12px;justify-content:center;flex-wrap:wrap;
+  margin-bottom:36px;
+}
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:14px 26px;border-radius:14px;
+  font-size:15px;font-weight:700;
+  transition:all .25s;
+}
+.btn-p{
+  background:linear-gradient(135deg,#0ea5e9,#38bdf8);
+  color:#fff;
+  box-shadow:0 8px 24px rgba(14,165,233,.4);
+}
+.btn-p:hover{transform:translateY(-3px)}
+.btn-s{
+  background:#0f1d33;
+  border:1px solid rgba(148,163,184,.2);
+  color:#f0f6ff;
+}
+.btn-s:hover{background:rgba(56,189,248,.1);border-color:#38bdf8}
+.stats{
+  display:flex;gap:32px;justify-content:center;flex-wrap:wrap;
+}
+.stat{text-align:center}
+.stat-n{
+  font-size:28px;font-weight:900;letter-spacing:-1px;
+  background:linear-gradient(135deg,#38bdf8,#a78bfa);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.stat-l{
+  font-size:11px;color:#5a7194;font-weight:700;
+  text-transform:uppercase;letter-spacing:1px;
+}
+
+/* TOOLBAR */
+.toolbar{
+  max-width:1100px;margin:0 auto;
+  padding:20px 20px 30px;
+}
+.search{
+  position:relative;max-width:640px;
+  margin:0 auto 18px;
+}
+.search input{
+  width:100%;padding:15px 18px 15px 50px;
+  background:#0f1d33;
+  border:1px solid rgba(148,163,184,.15);
+  border-radius:16px;
+  color:#f0f6ff;font-size:15px;
+  font-family:inherit;outline:none;
+  transition:all .25s;
+}
+.search input:focus{
+  border-color:#38bdf8;
+  box-shadow:0 0 0 4px rgba(56,189,248,.12);
+}
+.search input::placeholder{color:#5a7194}
+.search-i{
+  position:absolute;left:18px;top:50%;
+  transform:translateY(-50%);
+  font-size:17px;color:#5a7194;pointer-events:none;
+}
+.filters{
+  display:flex;gap:8px;flex-wrap:wrap;
+  justify-content:center;
+}
+.f-btn{
+  padding:8px 16px;border-radius:100px;
+  background:#0f1d33;
+  border:1px solid rgba(148,163,184,.15);
+  font-size:13px;font-weight:600;color:#8ba3c7;
+  cursor:pointer;font-family:inherit;
+  transition:all .25s;
+}
+.f-btn:hover{color:#f0f6ff;border-color:rgba(148,163,184,.35)}
+.f-btn.active{
+  background:linear-gradient(135deg,#0ea5e9,#38bdf8);
+  color:#fff;border-color:transparent;
+}
+
+/* WRAP */
+.wrap{
+  max-width:1100px;margin:0 auto;
+  padding:20px 20px 80px;
+}
+.section{margin-bottom:50px}
+.sec-head{
+  display:flex;align-items:center;gap:14px;
+  margin-bottom:8px;
+}
+.sec-i{
+  width:48px;height:48px;border-radius:14px;
+  background:#1a2d4a;
+  border:1px solid rgba(56,189,248,.2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:23px;flex-shrink:0;
+}
+.sec-head h2{font-size:24px;font-weight:800}
+.sec-sub{
+  font-size:14px;color:#8ba3c7;
+  margin-bottom:20px;padding-left:62px;
+}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+  gap:14px;
+}
+
+/* CARD */
+.card{
+  background:#0f1d33;
+  border:1px solid rgba(148,163,184,.12);
+  border-radius:18px;
+  padding:20px;
+  transition:all .25s;
+}
+.card:hover{
+  border-color:rgba(56,189,248,.4);
+  transform:translateY(-4px);
+  box-shadow:0 18px 40px rgba(0,0,0,.35);
+}
+.card-head{
+  display:flex;align-items:flex-start;gap:12px;
+  margin-bottom:14px;
+}
+.card-i{
+  width:44px;height:44px;border-radius:12px;
+  background:#1a2d4a;
+  border:1px solid rgba(56,189,248,.18);
+  display:flex;align-items:center;justify-content:center;
+  font-size:21px;flex-shrink:0;
+}
+.card-t{
+  font-size:15px;font-weight:800;
+  margin-bottom:3px;
+}
+.card-c{
+  display:inline-block;padding:2px 9px;
+  border-radius:100px;
+  background:rgba(167,139,250,.14);
+  border:1px solid rgba(167,139,250,.22);
+  font-size:9.5px;font-weight:800;
+  color:#a78bfa;
+  text-transform:uppercase;letter-spacing:.6px;
+}
+.code-row{
+  display:flex;align-items:center;gap:8px;
+  background:#081220;
+  border:1px solid rgba(148,163,184,.12);
+  border-radius:11px;
+  padding:11px 13px;
+  margin-bottom:12px;
+}
+.code{
+  flex:1;
+  font-family:'SF Mono',Consolas,monospace;
+  font-size:13px;font-weight:600;
+  color:#38bdf8;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.copy{
+  width:30px;height:30px;border-radius:8px;
+  background:rgba(56,189,248,.12);
+  border:1px solid rgba(56,189,248,.22);
+  color:#38bdf8;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;flex-shrink:0;
+  font-family:inherit;
+}
+.copy:hover{background:rgba(56,189,248,.25)}
+.copy.ok{background:rgba(52,211,153,.2);color:#34d399}
+.desc{
+  font-size:13.5px;color:#8ba3c7;
+  line-height:1.6;margin-bottom:12px;
+}
+.ex{
+  padding:10px 13px;
+  border-radius:11px;
+  background:#081220;
+  border:1px dashed rgba(148,163,184,.2);
+}
+.ex-l{
+  font-size:9.5px;font-weight:800;
+  color:#5a7194;text-transform:uppercase;
+  letter-spacing:1px;margin-bottom:4px;
+}
+.ex-t{
+  font-family:'SF Mono',Consolas,monospace;
+  font-size:12.5px;color:#8ba3c7;
+}
+
+/* FAQ */
+.faq{max-width:850px;margin:0 auto}
+.f-item{
+  background:#0f1d33;
+  border:1px solid rgba(148,163,184,.12);
+  border-radius:16px;
+  margin-bottom:10px;
+  overflow:hidden;
+}
+.f-item:hover{border-color:rgba(148,163,184,.28)}
+.f-q{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 22px;cursor:pointer;
+  font-size:15px;font-weight:700;
+  gap:16px;background:none;border:none;
+  width:100%;text-align:left;
+  color:#f0f6ff;font-family:inherit;
+}
+.f-i{
+  width:30px;height:30px;border-radius:9px;
+  background:rgba(56,189,248,.12);
+  border:1px solid rgba(56,189,248,.22);
+  color:#38bdf8;
+  display:flex;align-items:center;justify-content:center;
+  font-size:17px;font-weight:900;
+  flex-shrink:0;transition:all .25s;
+}
+.f-item.open .f-i{
+  background:linear-gradient(135deg,#0ea5e9,#38bdf8);
+  color:#fff;
+  transform:rotate(180deg);
+}
+.f-a{
+  max-height:0;overflow:hidden;
+  transition:max-height .3s ease,padding .25s ease;
+  color:#8ba3c7;font-size:14px;
+  padding:0 22px;line-height:1.8;
+}
+.f-item.open .f-a{
+  max-height:400px;
+  padding:0 22px 18px;
+}
+.f-a code{
+  background:rgba(56,189,248,.12);
+  color:#38bdf8;padding:2px 7px;
+  border-radius:6px;
+  font-family:'SF Mono',Consolas,monospace;
+  font-size:12.5px;
+}
+
+/* PREMIUM */
+.premium{
+  background:#1a2d4a;
+  border:1px solid rgba(251,191,36,.25);
+  border-radius:24px;
+  padding:32px;
+}
+.premium h3{
+  font-size:22px;font-weight:900;
+  color:#fbbf24;margin-bottom:22px;
+}
+.prem-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:10px 24px;margin-bottom:24px;
+}
+.prem-i{
+  display:flex;align-items:flex-start;gap:10px;
+  padding:8px 0;font-size:14px;color:#8ba3c7;
+}
+.prem-i::before{
+  content:"✦";color:#fbbf24;
+  font-weight:900;flex-shrink:0;
+}
+.prices{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:10px;
+}
+.p-card{
+  background:#081220;
+  border:1px solid rgba(148,163,184,.15);
+  border-radius:14px;
+  padding:18px 14px;text-align:center;
+}
+.p-card.top{
+  border-color:rgba(251,191,36,.5);
+  background:#2a2416;
+}
+.p-name{
+  font-size:11px;font-weight:800;
+  color:#5a7194;text-transform:uppercase;
+  letter-spacing:.8px;margin-bottom:8px;
+}
+.p-val{
+  font-size:24px;font-weight:900;
+  color:#fbbf24;
+}
+.p-val small{font-size:13px;color:#8ba3c7}
+
+/* FOOTER */
+footer{
+  border-top:1px solid rgba(148,163,184,.1);
+  padding:40px 20px 56px;text-align:center;
+  color:#5a7194;font-size:13px;
+}
+.f-logo{
+  display:flex;align-items:center;justify-content:center;
+  gap:10px;font-size:17px;font-weight:800;
+  color:#f0f6ff;margin-bottom:10px;
+}
+.f-links{
+  display:flex;justify-content:center;gap:20px;
+  flex-wrap:wrap;margin:16px 0;
+}
+.f-links a{color:#8ba3c7;font-weight:600}
+.f-links a:hover{color:#38bdf8}
+
+/* RESPONSIVE */
+@media(max-width:800px){
+  .nav-links{display:none}
+  .hero{padding:40px 16px 24px}
+  .wrap{padding:16px 16px 60px}
+  .grid{grid-template-columns:1fr}
+  .sec-sub{padding-left:0;margin-top:6px}
+  .prices{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-in">
+    <div class="logo"><span class="logo-emoji">💎</span><div><b>VM</b> Save</div></div>
+    <div class="nav-links">
+      <a href="#commands">Команды</a>
+      <a href="#faq">FAQ</a>
+      <a href="#premium">Premium</a>
+    </div>
+    <a href="https://t.me/VMSave_bot" class="nav-btn">Открыть бота</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-badge"><span class="dot"></span> Telegram Business Bot</div>
+  <h1>Все команды <b>VM Save</b></h1>
+  <p>65+ команд для Telegram Business: анимации, игры, форматирование, сервис и управление чатами.</p>
+  <div class="hero-btns">
+    <a href="#commands" class="btn btn-p">🎮 К командам</a>
+    <a href="#faq" class="btn btn-s">❓ FAQ</a>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="stat-n">65+</div><div class="stat-l">Команд</div></div>
+    <div class="stat"><div class="stat-n">7</div><div class="stat-l">Категорий</div></div>
+    <div class="stat"><div class="stat-n">24/7</div><div class="stat-l">Работа</div></div>
+    <div class="stat"><div class="stat-n">∞</div><div class="stat-l">С Premium</div></div>
+  </div>
+</section>
+
+<div class="toolbar">
+  <div class="search">
+    <input type="text" id="search" placeholder="Поиск команды... (ghost, ship, meme)" autocomplete="off">
+    <span class="search-i">🔍</span>
+  </div>
+  <div class="filters">
+    <button class="f-btn active" data-f="all">✨ Все</button>
+    <button class="f-btn" data-f="anim">🎬 Анимации</button>
+    <button class="f-btn" data-f="fun">🎲 Развлечения</button>
+    <button class="f-btn" data-f="fmt">📝 Формат</button>
+    <button class="f-btn" data-f="srv">⚙️ Сервис</button>
+    <button class="f-btn" data-f="mng">🛡 Управление</button>
+    <button class="f-btn" data-f="prc">📎 Обработка</button>
+  </div>
+</div>
+
+<div class="wrap" id="commands">
+
+<div class="empty" id="empty" style="display:none;text-align:center;padding:80px 20px;color:#5a7194">
+  <div style="font-size:56px;opacity:.25;margin-bottom:16px">🔍</div>
+  <div>Ничего не найдено</div>
+</div>
+
+<section class="section" data-cat="anim">
+  <div class="sec-head"><div class="sec-i">🎬</div><h2>Анимации</h2></div>
+  <p class="sec-sub">Красивые эффекты текста</p>
+  <div class="grid">
+    <div class="card" data-s="l печать слева анимация"><div class="card-head"><div class="card-i">⌨️</div><div><div class="card-t">Печать слева</div><span class="card-c">Анимации</span></div></div><div class="code-row"><div class="code">.l текст</div><button class="copy" onclick="cp(this,'.l текст')">📋</button></div><div class="desc">Печатает текст слева направо посимвольно.</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.l Привет!</div></div></div>
+    <div class="card" data-s="r печать справа анимация"><div class="card-head"><div class="card-i">⌨️</div><div><div class="card-t">Печать справа</div><span class="card-c">Анимации</span></div></div><div class="code-row"><div class="code">.r текст</div><button class="copy" onclick="cp(this,'.r текст')">📋</button></div><div class="desc">Печатает текст справа налево посимвольно.</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.r Привет!</div></div></div>
+    <div class="card" data-s="erase стереть стирание"><div class="card-head"><div class="card-i">🧽</div><div><div class="card-t">Стирание</div><span class="card-c">Анимации</span></div></div><div class="code-row"><div class="code">.erase текст</div><button class="copy" onclick="cp(this,'.erase текст')">📋</button></div><div class="desc">Показывает текст, затем стирает символ за символом.</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.erase Секрет</div></div></div>
+    <div class="card" data-s="count отсчёт таймер"><div class="card-head"><div class="card-i">⏱</div><div><div class="card-t">Отсчёт</div><span class="card-c">Анимации</span></div></div><div class="code-row"><div class="code">.count текст</div><button class="copy" onclick="cp(this,'.count текст')">📋</button></div><div class="desc">Отсчитывает 3-2-1 и показывает текст.</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.count Поехали!</div></div></div>
+    <div class="card" data-s="love сердце сердечко"><div class="card-head"><div class="card-i">❤️</div><div><div class="card-t">Сердечки</div><span class="card-c">Анимации</span></div></div><div class="code-row"><div class="code">.love текст</div><button class="copy" onclick="cp(this,'.love текст')">📋</button></div><div class="desc">Анимация с сердечками и вывод текста.</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.love Маша</div></div></div>
+    <div class="card" data-s="boom взрыв бабах"><div class="card-head"><div class="card-i">💥</div><div><div class="card-t">Взрыв</div><span class="card-c">Анимации</span></div></div><div class="code-row"><div class="code">.boom текст</div><button class="copy" onclick="cp(this,'.boom текст')">📋</button></div><div class="desc">Отсчёт и эффектный взрыв с текстом.</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.boom Бум!</div></div></div>
+    <div class="card" data-s="shuffle перемешать буквы"><div class="card-head"><div class="card-i">🔀</div><div><div class="card-t">Перемешать</div><span class="card-c">Анимации</span></div></div><div class="code-row"><div class="code">.shuffle текст</div><button class="copy" onclick="cp(this,'.shuffle текст')">📋</button></div><div class="desc">Перемешивает буквы, затем возвращает исходный текст.</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.shuffle Привет</div></div></div>
+    <div class="card" data-s="randomcase регистр случайный"><div class="card-head"><div class="card-i">🔠</div><div><div class="card-t">Случайный регистр</div><span class="card-c">Анимации</span></div></div><div class="code-row"><div class="code">.randomcase текст</div><button class="copy" onclick="cp(this,'.randomcase текст')">📋</button></div><div class="desc">Меняет регистр букв случайным образом.</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.randomcase Привет</div></div></div>
+    <div class="card" data-s="ghost исчезающее секрет"><div class="card-head"><div class="card-i">👻</div><div><div class="card-t">Исчезающее</div><span class="card-c">Анимации</span></div></div><div class="code-row"><div class="code">.ghost текст 5</div><button class="copy" onclick="cp(this,'.ghost текст 5')">📋</button></div><div class="desc">Сообщение исчезает через N секунд (3-180).</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.ghost Тайна 10</div></div></div>
+    <div class="card" data-s="type живой набор печать"><div class="card-head"><div class="card-i">⌨️</div><div><div class="card-t">Живой набор</div><span class="card-c">Анимации</span></div></div><div class="code-row"><div class="code">.type текст</div><button class="copy" onclick="cp(this,'.type текст')">📋</button></div><div class="desc">Плавно печатает текст, как живой набор.</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.type Привет</div></div></div>
+  </div>
+</section>
+
+<section class="section" data-cat="fun">
+  <div class="sec-head"><div class="sec-i">🎲</div><h2>Развлечения</h2></div>
+  <p class="sec-sub">Игры, тесты и шуточные команды</p>
+  <div class="grid">
+    <div class="card" data-s="percent процент шанс"><div class="card-head"><div class="card-i">📊</div><div><div class="card-t">Процент</div><span class="card-c">Развлечения</span></div></div><div class="code-row"><div class="code">.percent текст</div><button class="copy" onclick="cp(this,'.percent текст')">📋</button></div><div class="desc">Случайный процент на любой запрос.</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.percent кофе</div></div></div>
+    <div class="card" data-s="ship совместимость любовь"><div class="card-head"><div class="card-i">💞</div><div><div class="card-t">Совместимость</div><span class="card-c">Развлечения</span></div></div><div class="code-row"><div class="code">.ship имя1 имя2</div><button class="copy" onclick="cp(this,'.ship имя1 имя2')">📋</button></div><div class="desc">Процент совместимости пары.</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.ship Аня Дима</div></div></div>
+    <div class="card" data-s="iq тест ум"><div class="card-head"><div class="card-i">🧠</div><div><div class="card-t">IQ-тест</div><span class="card-c">Развлечения</span></div></div><div class="code-row"><div class="code">.iq имя</div><button class="copy" onclick="cp(this,'.iq имя')">📋</button></div><div class="desc">Шуточный IQ-тест.</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.iq Вася</div></div></div>
+    <div class="card" data-s="luck удача день"><div class="card-head"><div class="card-i">🍀</div><div><div class="card-t">Удача дня</div><span class="card-c">Развлечения</span></div></div><div class="code-row"><div class="code">.luck</div><button class="copy" onclick="cp(this,'.luck')">📋</button></div><div class="desc">Удача на сегодня.</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.luck</div></div></div>
+    <div class="card" data-s="dice кубик"><div class="card-head"><div class="card-i">🎲</div><div><div class="card-t">Кубик</div><span class="card-c">Развлечения</span></div></div><div class="code-row"><div class="code">.dice</div><button class="copy" onclick="cp(this,'.dice')">📋</button></div><div class="desc">Бросок кубика от 1 до 6.</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.dice</div></div></div>
+    <div class="card" data-s="roll dnd дайсы"><div class="card-head"><div class="card-i">🎯</div><div><div class="card-t">Кубики D&D</div><span class="card-c">Развлечения</span></div></div><div class="code-row"><div class="code">.roll 2d20</div><button class="copy" onclick="cp(this,'.roll 2d20')">📋</button></div><div class="desc">N кубиков с M гранями.</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.roll 3d6</div></div></div>
+    <div class="card" data-s="flip монетка"><div class="card-head"><div class="card-i">🪙</div><div><div class="card-t">Монетка</div><span class="card-c">Развлечения</span></div></div><div class="code-row"><div class="code">.flip</div><button class="copy" onclick="cp(this,'.flip')">📋</button></div><div class="desc">Орёл или решка.</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.flip</div></div></div>
+    <div class="card" data-s="duel дуэль"><div class="card-head"><div class="card-i">⚔️</div><div><div class="card-t">Дуэль</div><span class="card-c">Развлечения</span></div></div><div class="code-row"><div class="code">.duel</div><button class="copy" onclick="cp(this,'.duel')">📋</button></div><div class="desc">Дуэль с собеседником (ответом).</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.duel (в ответ)</div></div></div>
+    <div class="card" data-s="ttt крестики нолики"><div class="card-head"><div class="card-i">❌</div><div><div class="card-t">Крестики-нолики</div><span class="card-c">Развлечения</span></div></div><div class="code-row"><div class="code">.ttt</div><button class="copy" onclick="cp(this,'.ttt')">📋</button></div><div class="desc">Игра с inline-кнопками.</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.ttt (в ответ)</div></div></div>
+    <div class="card" data-s="bw закрась поле"><div class="card-head"><div class="card-i">🎨</div><div><div class="card-t">Закрась поле</div><span class="card-c">Развлечения</span></div></div><div class="code-row"><div class="code">.bw</div><button class="copy" onclick="cp(this,'.bw')">📋</button></div><div class="desc">Пиксель-поле 5×5.</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.bw</div></div></div>
+    <div class="card" data-s="meme мем"><div class="card-head"><div class="card-i">😂</div><div><div class="card-t">Мем</div><span class="card-c">Развлечения</span></div></div><div class="code-row"><div class="code">.meme</div><button class="copy" onclick="cp(this,'.meme')">📋</button></div><div class="desc">Случайный мем.</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.meme</div></div></div>
+    <div class="card" data-s="cat dog кот пёс"><div class="card-head"><div class="card-i">🐱</div><div><div class="card-t">Кот / Пёс</div><span class="card-c">Развлечения</span></div></div><div class="code-row"><div class="code">.cat / .dog</div><button class="copy" onclick="cp(this,'.cat')">📋</button></div><div class="desc">Фото кота или собаки.</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.cat</div></div></div>
+  </div>
+</section>
+
+<section class="section" data-cat="fmt">
+  <div class="sec-head"><div class="sec-i">📝</div><h2>Форматирование</h2></div>
+  <p class="sec-sub">Оформление текста</p>
+  <div class="grid">
+    <div class="card" data-s="bold жирный"><div class="card-head"><div class="card-i">🅱️</div><div><div class="card-t">Жирный</div><span class="card-c">Формат</span></div></div><div class="code-row"><div class="code">.bold текст</div><button class="copy" onclick="cp(this,'.bold текст')">📋</button></div><div class="desc">Жирный шрифт.</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.bold Важно</div></div></div>
+    <div class="card" data-s="italic курсив"><div class="card-head"><div class="card-i">✍️</div><div><div class="card-t">Курсив</div><span class="card-c">Формат</span></div></div><div class="code-row"><div class="code">.italic текст</div><button class="copy" onclick="cp(this,'.italic текст')">📋</button></div><div class="desc">Курсив.</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.italic Мысль</div></div></div>
+    <div class="card" data-s="monospace моно код"><div class="card-head"><div class="card-i">⌨️</div><div><div class="card-t">Моноширинный</div><span class="card-c">Формат</span></div></div><div class="code-row"><div class="code">.monospace текст</div><button class="copy" onclick="cp(this,'.monospace текст')">📋</button></div><div class="desc">Шрифт как в коде.</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.monospace Код</div></div></div>
+    <div class="card" data-s="underline подчёркнутый"><div class="card-head"><div class="card-i">📏</div><div><div class="card-t">Подчёркнутый</div><span class="card-c">Формат</span></div></div><div class="code-row"><div class="code">.underline текст</div><button class="copy" onclick="cp(this,'.underline текст')">📋</button></div><div class="desc">Подчёркивает текст.</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.underline Важно</div></div></div>
+    <div class="card" data-s="leet 1337"><div class="card-head"><div class="card-i">👾</div><div><div class="card-t">Leet</div><span class="card-c">Формат</span></div></div><div class="code-row"><div class="code">.leet текст</div><button class="copy" onclick="cp(this,'.leet текст')">📋</button></div><div class="desc">Стиль l33t.</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.leet Hack</div></div></div>
+    <div class="card" data-s="kawaii няшный"><div class="card-head"><div class="card-i">🌸</div><div><div class="card-t">Kawaii</div><span class="card-c">Формат</span></div></div><div class="code-row"><div class="code">.kawaii текст</div><button class="copy" onclick="cp(this,'.kawaii текст')">📋</button></div><div class="desc">Няшный стиль.</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.kawaii Привет</div></div></div>
+    <div class="card" data-s="vaporwave эстетика"><div class="card-head"><div class="card-i">🌴</div><div><div class="card-t">Vaporwave</div><span class="card-c">Формат</span></div></div><div class="code-row"><div class="code">.vaporwave текст</div><button class="copy" onclick="cp(this,'.vaporwave текст')">📋</button></div><div class="desc">Ａｅｓｔｈｅｔｉｃ.</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.vaporwave Привет</div></div></div>
+    <div class="card" data-s="zalgo искажение"><div class="card-head"><div class="card-i">👹</div><div><div class="card-t">Zalgo</div><span class="card-c">Формат</span></div></div><div class="code-row"><div class="code">.zalgo текст</div><button class="copy" onclick="cp(this,'.zalgo текст')">📋</button></div><div class="desc">Искажение текста.</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.zalgo Тьма</div></div></div>
+    <div class="card" data-s="mock чередование"><div class="card-head"><div class="card-i">🧽</div><div><div class="card-t">Mock</div><span class="card-c">Формат</span></div></div><div class="code-row"><div class="code">.mock текст</div><button class="copy" onclick="cp(this,'.mock текст')">📋</button></div><div class="desc">ЧеРеДуЮщИйСя РеГиСтР.</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.mock Смешно</div></div></div>
+    <div class="card" data-s="reverse реверс"><div class="card-head"><div class="card-i">🔄</div><div><div class="card-t">Reverse</div><span class="card-c">Формат</span></div></div><div class="code-row"><div class="code">.reverse текст</div><button class="copy" onclick="cp(this,'.reverse текст')">📋</button></div><div class="desc">Текст задом наперёд.</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.reverse Привет</div></div></div>
+    <div class="card" data-s="tsundere"><div class="card-head"><div class="card-i">😤</div><div><div class="card-t">Tsundere</div><span class="card-c">Формат</span></div></div><div class="code-row"><div class="code">.tsundere текст</div><button class="copy" onclick="cp(this,'.tsundere текст')">📋</button></div><div class="desc">Цундере-стиль.</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.tsundere Привет</div></div></div>
+    <div class="card" data-s="yandere"><div class="card-head"><div class="card-i">🔪</div><div><div class="card-t">Yandere</div><span class="card-c">Формат</span></div></div><div class="code-row"><div class="code">.yandere текст</div><button class="copy" onclick="cp(this,'.yandere текст')">📋</button></div><div class="desc">Яндере-стиль.</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.yandere Ты мой</div></div></div>
+  </div>
+</section>
+
+<section class="section" data-cat="srv">
+  <div class="sec-head"><div class="sec-i">⚙️</div><h2>Сервис</h2></div>
+  <p class="sec-sub">Информация и управление</p>
+  <div class="grid">
+    <div class="card" data-s="me профиль"><div class="card-head"><div class="card-i">👤</div><div><div class="card-t">Мой профиль</div><span class="card-c">Сервис</span></div></div><div class="code-row"><div class="code">.me</div><button class="copy" onclick="cp(this,'.me')">📋</button></div><div class="desc">Имя, ID, username.</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.me</div></div></div>
+    <div class="card" data-s="id айди"><div class="card-head"><div class="card-i">🆔</div><div><div class="card-t">Мой ID</div><span class="card-c">Сервис</span></div></div><div class="code-row"><div class="code">.id</div><button class="copy" onclick="cp(this,'.id')">📋</button></div><div class="desc">Telegram ID.</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.id</div></div></div>
+    <div class="card" data-s="ping пинг"><div class="card-head"><div class="card-i">🏓</div><div><div class="card-t">Ping</div><span class="card-c">Сервис</span></div></div><div class="code-row"><div class="code">.ping</div><button class="copy" onclick="cp(this,'.ping')">📋</button></div><div class="desc">Задержка бота.</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.ping</div></div></div>
+    <div class="card" data-s="time время"><div class="card-head"><div class="card-i">⏰</div><div><div class="card-t">Время</div><span class="card-c">Сервис</span></div></div><div class="code-row"><div class="code">.time</div><button class="copy" onclick="cp(this,'.time')">📋</button></div><div class="desc">Время по МСК.</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.time</div></div></div>
+    <div class="card" data-s="weather погода"><div class="card-head"><div class="card-i">🌤</div><div><div class="card-t">Погода</div><span class="card-c">Сервис</span></div></div><div class="code-row"><div class="code">.weather город</div><button class="copy" onclick="cp(this,'.weather город')">📋</button></div><div class="desc">Погода в городе.</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.weather Москва</div></div></div>
+    <div class="card" data-s="afk"><div class="card-head"><div class="card-i">💤</div><div><div class="card-t">AFK</div><span class="card-c">Сервис</span></div></div><div class="code-row"><div class="code">.afk причина</div><button class="copy" onclick="cp(this,'.afk причина')">📋</button></div><div class="desc">Статус AFK.</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.afk сплю</div></div></div>
+    <div class="card" data-s="unafk"><div class="card-head"><div class="card-i">✅</div><div><div class="card-t">Снять AFK</div><span class="card-c">Сервис</span></div></div><div class="code-row"><div class="code">.unafk</div><button class="copy" onclick="cp(this,'.unafk')">📋</button></div><div class="desc">Снимает AFK.</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.unafk</div></div></div>
+    <div class="card" data-s="remind напоминание"><div class="card-head"><div class="card-i">⏰</div><div><div class="card-t">Напоминание</div><span class="card-c">Сервис</span></div></div><div class="code-row"><div class="code">.remind 5м текст</div><button class="copy" onclick="cp(this,'.remind 5м текст')">📋</button></div><div class="desc">Через N минут.</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.remind 10м Позвонить</div></div></div>
+    <div class="card" data-s="timer таймер"><div class="card-head"><div class="card-i">⏳</div><div><div class="card-t">Таймер</div><span class="card-c">Сервис</span></div></div><div class="code-row"><div class="code">.timer 10м</div><button class="copy" onclick="cp(this,'.timer 10м')">📋</button></div><div class="desc">Обратный отсчёт.</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.timer 5м</div></div></div>
+    <div class="card" data-s="prefix префикс"><div class="card-head"><div class="card-i">🔧</div><div><div class="card-t">Префикс</div><span class="card-c">Сервис</span></div></div><div class="code-row"><div class="code">.prefix !</div><button class="copy" onclick="cp(this,'.prefix !')">📋</button></div><div class="desc">Сменить префикс.</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.prefix !</div></div></div>
+  </div>
+</section>
+
+<section class="section" data-cat="mng">
+  <div class="sec-head"><div class="sec-i">🛡</div><h2>Управление</h2></div>
+  <p class="sec-sub">Контроль чатов</p>
+  <div class="grid">
+    <div class="card" data-s="clone дублирование"><div class="card-head"><div class="card-i">🔁</div><div><div class="card-t">Дублирование</div><span class="card-c">Управление</span></div></div><div class="code-row"><div class="code">.clone</div><button class="copy" onclick="cp(this,'.clone')">📋</button></div><div class="desc">Копировать сообщения в ЛС.</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.clone</div></div></div>
+    <div class="card" data-s="unclone выкл"><div class="card-head"><div class="card-i">🔁</div><div><div class="card-t">Выкл. дублирование</div><span class="card-c">Управление</span></div></div><div class="code-row"><div class="code">.unclone</div><button class="copy" onclick="cp(this,'.unclone')">📋</button></div><div class="desc">Выключить копирование.</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.unclone</div></div></div>
+    <div class="card" data-s="mute мут"><div class="card-head"><div class="card-i">🔇</div><div><div class="card-t">Мут</div><span class="card-c">Управление</span></div></div><div class="code-row"><div class="code">.mute</div><button class="copy" onclick="cp(this,'.mute')">📋</button></div><div class="desc">Удалять сообщения собеседника.</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.mute</div></div></div>
+    <div class="card" data-s="unmute снять мут"><div class="card-head"><div class="card-i">🔊</div><div><div class="card-t">Снять мут</div><span class="card-c">Управление</span></div></div><div class="code-row"><div class="code">.unmute</div><button class="copy" onclick="cp(this,'.unmute')">📋</button></div><div class="desc">Снять мут.</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.unmute</div></div></div>
+    <div class="card" data-s="blacklist чс"><div class="card-head"><div class="card-i">🚫</div><div><div class="card-t">Чёрный список</div><span class="card-c">Управление</span></div></div><div class="code-row"><div class="code">.blacklist</div><button class="copy" onclick="cp(this,'.blacklist')">📋</button></div><div class="desc">Не отслеживать чат.</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.blacklist</div></div></div>
+    <div class="card" data-s="whitelist бс"><div class="card-head"><div class="card-i">⚪</div><div><div class="card-t">Белый список</div><span class="card-c">Управление</span></div></div><div class="code-row"><div class="code">.whitelist</div><button class="copy" onclick="cp(this,'.whitelist')">📋</button></div><div class="desc">Только этот чат.</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.whitelist</div></div></div>
+    <div class="card" data-s="delay задержка"><div class="card-head"><div class="card-i">⏱</div><div><div class="card-t">Задержка</div><span class="card-c">Управление</span></div></div><div class="code-row"><div class="code">.delay 10</div><button class="copy" onclick="cp(this,'.delay 10')">📋</button></div><div class="desc">Задержка уведомлений.</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.delay 15</div></div></div>
+  </div>
+</section>
+
+<section class="section" data-cat="prc">
+  <div class="sec-head"><div class="sec-i">📎</div><h2>Обработка</h2></div>
+  <p class="sec-sub">Утилиты</p>
+  <div class="grid">
+    <div class="card" data-s="check файл"><div class="card-head"><div class="card-i">📄</div><div><div class="card-t">Инфо о файле</div><span class="card-c">Обработка</span></div></div><div class="code-row"><div class="code">.check</div><button class="copy" onclick="cp(this,'.check')">📋</button></div><div class="desc">Имя и размер.</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.check (в ответ)</div></div></div>
+    <div class="card" data-s="sw раскладка"><div class="card-head"><div class="card-i">🔤</div><div><div class="card-t">Сменить раскладку</div><span class="card-c">Обработка</span></div></div><div class="code-row"><div class="code">.sw текст</div><button class="copy" onclick="cp(this,'.sw текст')">📋</button></div><div class="desc">RU ↔ EN.</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.sw Ghbdtn</div></div></div>
+    <div class="card" data-s="gifts подарки"><div class="card-head"><div class="card-i">🎁</div><div><div class="card-t">Подарки</div><span class="card-c">Обработка</span></div></div><div class="code-row"><div class="code">.gifts</div><button class="copy" onclick="cp(this,'.gifts')">📋</button></div><div class="desc">3 случайных подарка.</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.gifts</div></div></div>
+    <div class="card" data-s="nk неко"><div class="card-head"><div class="card-i">🐱</div><div><div class="card-t">Neko-тян</div><span class="card-c">Обработка</span></div></div><div class="code-row"><div class="code">.nk</div><button class="copy" onclick="cp(this,'.nk')">📋</button></div><div class="desc">Картинка неко.</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.nk</div></div></div>
+    <div class="card" data-s="short пересказ"><div class="card-head"><div class="card-i">📝</div><div><div class="card-t">Пересказ</div><span class="card-c">Обработка</span></div></div><div class="code-row"><div class="code">.short</div><button class="copy" onclick="cp(this,'.short')">📋</button></div><div class="desc">Обрезка до 150 симв.</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.short (в ответ)</div></div></div>
+    <div class="card" data-s="lq ухудшить"><div class="card-head"><div class="card-i">📉</div><div><div class="card-t">Ухудшить фото</div><span class="card-c">Обработка</span></div></div><div class="code-row"><div class="code">.lq</div><button class="copy" onclick="cp(this,'.lq')">📋</button></div><div class="desc">Эффект «шакал».</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.lq (в ответ на фото)</div></div></div>
+    <div class="card" data-s="gosu сюрприз"><div class="card-head"><div class="card-i">🎉</div><div><div class="card-t">Сюрприз</div><span class="card-c">Обработка</span></div></div><div class="code-row"><div class="code">.gosu</div><button class="copy" onclick="cp(this,'.gosu')">📋</button></div><div class="desc">Гирлянда.</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.gosu</div></div></div>
+    <div class="card" data-s="gp большой сюрприз"><div class="card-head"><div class="card-i">🎊</div><div><div class="card-t">Большой сюрприз</div><span class="card-c">Обработка</span></div></div><div class="code-row"><div class="code">.gp</div><button class="copy" onclick="cp(this,'.gp')">📋</button></div><div class="desc">+ подарок.</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.gp</div></div></div>
+    <div class="card" data-s="qr qr-код"><div class="card-head"><div class="card-i">📱</div><div><div class="card-t">QR-код</div><span class="card-c">Обработка</span></div></div><div class="code-row"><div class="code">.qr текст</div><button class="copy" onclick="cp(this,'.qr текст')">📋</button></div><div class="desc">QR из текста.</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.qr https://t.me</div></div></div>
+    <div class="card" data-s="b64 base64"><div class="card-head"><div class="card-i">🔐</div><div><div class="card-t">Base64</div><span class="card-c">Обработка</span></div></div><div class="code-row"><div class="code">.b64 текст</div><button class="copy" onclick="cp(this,'.b64 текст')">📋</button></div><div class="desc">Кодировать.</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.b64 Привет</div></div></div>
+    <div class="card" data-s="unb64 декод"><div class="card-head"><div class="card-i">🔓</div><div><div class="card-t">Unbase64</div><span class="card-c">Обработка</span></div></div><div class="code-row"><div class="code">.unb64 текст</div><button class="copy" onclick="cp(this,'.unb64 текст')">📋</button></div><div class="desc">Декодировать.</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.unb64 0J/RgNC40LLQtdGC</div></div></div>
+    <div class="card" data-s="hash хэш"><div class="card-head"><div class="card-i">🔐</div><div><div class="card-t">Хэш</div><span class="card-c">Обработка</span></div></div><div class="code-row"><div class="code">.hash текст</div><button class="copy" onclick="cp(this,'.hash текст')">📋</button></div><div class="desc">MD5 + SHA256.</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.hash Привет</div></div></div>
+    <div class="card" data-s="autoresponder автоответ"><div class="card-head"><div class="card-i">🤖</div><div><div class="card-t">Автоответчик</div><span class="card-c">Обработка</span></div></div><div class="code-row"><div class="code">.autoresponder X=Y</div><button class="copy" onclick="cp(this,'.autoresponder X=Y')">📋</button></div><div class="desc">Автоответ на слово.</div><div class="ex"><div class="ex-l">Пример</div><div class="ex-t">.autoresponder привет=и тебе</div></div></div>
+  </div>
+</section>
+
+<section class="section" id="faq">
+  <div class="sec-head"><div class="sec-i">❓</div><h2>Частые вопросы</h2></div>
+  <p class="sec-sub">FAQ</p>
+  <div class="faq">
+    <div class="f-item"><button class="f-q" onclick="tf(this)"><span>Кто может использовать эти команды?</span><span class="f-i">+</span></button><div class="f-a">Команды доступны владельцу Business-бота, который подключил VM Save. Некоторые развлекательные команды требуют Premium.</div></div>
+    <div class="f-item"><button class="f-q" onclick="tf(this)"><span>Где работают команды?</span><span class="f-i">+</span></button><div class="f-a">В личных чатах, где подключён VM Save через Telegram Business. Префикс по умолчанию <code>.</code></div></div>
+    <div class="f-item"><button class="f-q" onclick="tf(this)"><span>Почему между командами есть задержка?</span><span class="f-i">+</span></button><div class="f-a">Между командами установлен интервал 2 секунды для стабильной работы и защиты от флуда.</div></div>
+    <div class="f-item"><button class="f-q" onclick="tf(this)"><span>Как работает .ghost?</span><span class="f-i">+</span></button><div class="f-a">Показывает текст, а затем через N секунд заменяет на «👻 Сообщение исчезло». От 3 до 180 секунд.</div></div>
+    <div class="f-item"><button class="f-q" onclick="tf(this)"><span>Как работают .clone и .unclone?</span><span class="f-i">+</span></button><div class="f-a"><code>.clone</code> — копирует текстовые сообщения собеседника в ЛС. <code>.unclone</code> — выключает.</div></div>
+    <div class="f-item"><button class="f-q" onclick="tf(this)"><span>Что нужно для .mute?</span><span class="f-i">+</span></button><div class="f-a">Право удаления сообщений через Telegram Business. Бот будет удалять сообщения собеседника в этом чате.</div></div>
+    <div class="f-item"><button class="f-q" onclick="tf(this)"><span>Что показывает .ping?</span><span class="f-i">+</span></button><div class="f-a">Задержку между командой и ответом бота в миллисекундах.</div></div>
+    <div class="f-item"><button class="f-q" onclick="tf(this)"><span>Что показывает .me?</span><span class="f-i">+</span></button><div class="f-a">Имя, Telegram ID, username и роль.</div></div>
+    <div class="f-item"><button class="f-q" onclick="tf(this)"><span>Можно ли запретить удаление сообщений?</span><span class="f-i">+</span></button><div class="f-a">Нет. VM Save только уведомляет об удалении. Запретить удаление на стороне собеседника невозможно.</div></div>
+    <div class="f-item"><button class="f-q" onclick="tf(this)"><span>Сколько хранятся данные?</span><span class="f-i">+</span></button><div class="f-a">Все сообщения и медиафайлы — не более 7 дней. Потом удаляются автоматически.</div></div>
+    <div class="f-item"><button class="f-q" onclick="tf(this)"><span>Как подключить бота?</span><span class="f-i">+</span></button><div class="f-a">Telegram → Настройки → Telegram Business → Чат-боты → <code>@VMSave_bot</code> → все галочки в «Сообщения» → разрешить.</div></div>
+  </div>
+</section>
+
+<section class="section" id="premium">
+  <div class="sec-head"><div class="sec-i">💎</div><h2>Premium-подписка</h2></div>
+  <p class="sec-sub">Расширенные возможности</p>
+  <div class="premium">
+    <h3>✨ Что даёт Premium</h3>
+    <div class="prem-grid">
+      <div class="prem-i">Уведомления о GIF, стикерах, фото, видео, аудио</div>
+      <div class="prem-i">Сохранение одноразовых фото и видео</div>
+      <div class="prem-i">Лимит уведомлений убирается (∞)</div>
+      <div class="prem-i">Все развлекательные команды</div>
+      <div class="prem-i">Отключение рекламы</div>
+      <div class="prem-i">Приоритетная обработка</div>
+    </div>
+    <h3 style="font-size:20px;margin-bottom:20px">💎 Тарифы</h3>
+    <div class="prices">
+      <div class="p-card"><div class="p-name">3 дня</div><div class="p-val">9 <small>⭐</small></div></div>
+      <div class="p-card"><div class="p-name">7 дней</div><div class="p-val">19 <small>⭐</small></div></div>
+      <div class="p-card top"><div class="p-name">1 месяц</div><div class="p-val">49 <small>⭐</small></div></div>
+      <div class="p-card"><div class="p-name">3 месяца</div><div class="p-val">129 <small>⭐</small></div></div>
+      <div class="p-card"><div class="p-name">6 месяцев</div><div class="p-val">249 <small>⭐</small></div></div>
+      <div class="p-card"><div class="p-name">1 год</div><div class="p-val">549 <small>⭐</small></div></div>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<footer>
+  <div class="f-logo"><span style="font-size:20px">💎</span> VM Save</div>
+  <div>Telegram Business Bot</div>
+  <div class="f-links">
+    <a href="https://t.me/VMSave_bot">Бот</a>
+    <a href="https://t.me/VmSave_news">Новости</a>
+    <a href="https://t.me/VMSavesupport_Bot">Поддержка</a>
+    <a href="privacy.html">Политика</a>
+    <a href="terms.html">Соглашение</a>
+  </div>
+  <div style="opacity:.5;margin-top:10px">© 2026 VM Save</div>
+</footer>
+
+<script>
+function cp(btn, text){
+  var ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position='fixed';
+  ta.style.opacity='0';
+  document.body.appendChild(ta);
+  ta.select();
+  try{
+    document.execCommand('copy');
+    btn.textContent='✅';
+    btn.classList.add('ok');
+    setTimeout(function(){
+      btn.textContent='📋';
+      btn.classList.remove('ok');
+    }, 1200);
+  }catch(e){}
+  document.body.removeChild(ta);
+}
+
+function tf(btn){
+  var item = btn.closest('.f-item');
+  item.classList.toggle('open');
+  var i = btn.querySelector('.f-i');
+  i.textContent = item.classList.contains('open') ? '−' : '+';
+}
+
+var search = document.getElementById('search');
+var cards = document.querySelectorAll('.card');
+var empty = document.getElementById('empty');
+var sections = document.querySelectorAll('section[data-cat]');
+var fBtns = document.querySelectorAll('.f-btn');
+var fActive = 'all';
+
+function applyFilters(){
+  var q = search.value.toLowerCase().trim();
+  var total = 0;
+  for(var i=0;i<cards.length;i++){
+    var c = cards[i];
+    var s = (c.getAttribute('data-s')||'') + ' ' + c.textContent.toLowerCase();
+    var ms = !q || s.indexOf(q) !== -1;
+    var sec = c.parentNode.parentNode;
+    var cat = sec ? sec.getAttribute('data-cat') : '';
+    var mf = fActive === 'all' || cat === fActive;
+    var m = ms && mf;
+    c.style.display = m ? '' : 'none';
+    if (m) total++;
+  }
+  for(var j=0;j<sections.length;j++){
+    var sc = sections[j];
+    var visCount = 0;
+    var allCards = sc.querySelectorAll('.card');
+    for(var k=0;k<allCards.length;k++){
+      if(allCards[k].style.display !== 'none') visCount++;
+    }
+    sc.style.display = (allCards.length > 0 && visCount === 0 && (q || fActive !== 'all')) ? 'none' : '';
+  }
+  empty.style.display = (total === 0 && (q || fActive !== 'all')) ? 'block' : 'none';
+}
+
+search.addEventListener('input', applyFilters);
+
+for(var i=0;i<fBtns.length;i++){
+  fBtns[i].addEventListener('click', function(){
+    for(var j=0;j<fBtns.length;j++) fBtns[j].classList.remove('active');
+    this.classList.add('active');
+    fActive = this.getAttribute('data-f');
+    applyFilters();
+  });
+}
+
+document.querySelectorAll('a[href^="#"]').forEach(function(a){
+  a.addEventListener('click', function(e){
+    var href = this.getAttribute('href');
+    if (href === '#') return;
+    var t = document.querySelector(href);
+    if (t){
+      e.preventDefault();
+      var y = t.getBoundingClientRect().top + window.scrollY - 80;
+      window.scrollTo({top: y, behavior: 'smooth'});
+    }
+  });
+});
+</script>
+</body>
+</html>
